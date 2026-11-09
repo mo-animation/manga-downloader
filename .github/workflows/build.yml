@@ -1,0 +1,87 @@
+name: Build Windows + Mac
+
+# كل ما ترفع تعديل على main، بيبني نسختين (Windows و Mac) وينزّلهم في Releases
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: windows
+          - os: macos-latest
+            name: mac
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: python -m pip install pyinstaller pillow -r requirements.txt
+
+      - name: Self-test (opens the window and takes a screenshot)
+        run: python manga_gui.py --selftest screenshot-${{ matrix.name }}.png
+
+      - name: Build Windows .exe
+        if: matrix.name == 'windows'
+        run: |
+          python -m PyInstaller --noconfirm --onefile --windowed --name MangaDownloader manga_gui.py
+          Compress-Archive -Path dist/MangaDownloader.exe -DestinationPath MangaDownloader-Windows.zip
+
+      - name: Build Mac .app
+        if: matrix.name == 'mac'
+        run: |
+          python -m PyInstaller --noconfirm --windowed --name "Manga Downloader" \
+            --osx-bundle-identifier com.mosaab.mangadownloader manga_gui.py
+          ditto -c -k --keepParent "dist/Manga Downloader.app" MangaDownloader-Mac.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: |
+            MangaDownloader-*.zip
+            screenshot-*.png
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version
+        id: v
+        run: echo "version=$(python3 -c 'import app_version; print(app_version.VERSION)')" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.v.outputs.version }}
+          name: Manga Downloader v${{ steps.v.outputs.version }}
+          make_latest: true
+          files: |
+            out/MangaDownloader-Windows.zip
+            out/MangaDownloader-Mac.zip
+          body: |
+            ## التحميل
+            - **Windows:** نزّل `MangaDownloader-Windows.zip`، فك الضغط، ودوس دبل كليك على `MangaDownloader.exe`
+            - **Mac:** نزّل `MangaDownloader-Mac.zip`، افتحه، واسحب `Manga Downloader` لفولدر Applications
+
+            أول مرة على الماك: كليك يمين على البرنامج ← Open ← Open.
+            ولو قالك إنه damaged، افتح Terminal واكتب:
+            `xattr -cr "/Applications/Manga Downloader.app"`
