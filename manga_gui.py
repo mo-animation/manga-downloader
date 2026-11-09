@@ -43,6 +43,17 @@ def open_path(path):
         subprocess.Popen(["xdg-open", path])
 
 
+def hard_exit(code=0):
+    """خروج فوري. على الويندوز بنقفل البروسس مباشرة عشان التنضيف بتاع Qt بيعمل كراش ساعات."""
+    sys.stdout.flush()
+    sys.stderr.flush()
+    if IS_WIN:
+        import ctypes
+        k = ctypes.windll.kernel32
+        k.TerminateProcess(k.GetCurrentProcess(), code)
+    os._exit(code)
+
+
 def version_tuple(v):
     return tuple(int(x) for x in "".join(ch if ch.isdigit() or ch == "." else "" for ch in v).split(".") if x)
 
@@ -719,14 +730,11 @@ def main():
                 pix.save(shot)
             print("selftest ok", flush=True)
             win.busy = False  # عشان ميسألش «تقفل البرنامج؟»
-            sys.stdout.flush()
-            os._exit(0)  # خروج مباشر بعد الفحص
+            hard_exit(0)
 
         QTimer.singleShot(3000, finish)
 
-    code = app.exec()
-    sys.stdout.flush()
-    os._exit(code)  # خروج نضيف من غير ما Qt يقفل نفسه حتة حتة (بيمنع كراش عند القفل)
+    hard_exit(app.exec())
 
 
 if __name__ == "__main__":
