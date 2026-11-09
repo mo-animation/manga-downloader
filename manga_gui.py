@@ -50,6 +50,8 @@ def hard_exit(code=0):
     if IS_WIN:
         import ctypes
         k = ctypes.windll.kernel32
+        k.GetCurrentProcess.restype = ctypes.c_void_p  # الهاندل 64 بت
+        k.TerminateProcess.argtypes = [ctypes.c_void_p, ctypes.c_uint]
         k.TerminateProcess(k.GetCurrentProcess(), code)
     os._exit(code)
 
