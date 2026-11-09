@@ -204,7 +204,8 @@ class App(Backdrop):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.poll)
         self.timer.start(100)
-        threading.Thread(target=self.check_update, daemon=True).start()
+        if "--selftest" not in sys.argv:
+            threading.Thread(target=self.check_update, daemon=True).start()
 
     def btn(self, text, cmd, kind="glass", height=34, min_width=0):
         b = GlassButton(text, kind, height=height, min_width=min_width)
@@ -717,14 +718,15 @@ def main():
                     pix = win.grab()
                 pix.save(shot)
             print("selftest ok", flush=True)
-            print("exiting", flush=True)
             win.busy = False  # عشان ميسألش «تقفل البرنامج؟»
             sys.stdout.flush()
             os._exit(0)  # خروج مباشر بعد الفحص
 
         QTimer.singleShot(3000, finish)
 
-    sys.exit(app.exec())
+    code = app.exec()
+    sys.stdout.flush()
+    os._exit(code)  # خروج نضيف من غير ما Qt يقفل نفسه حتة حتة (بيمنع كراش عند القفل)
 
 
 if __name__ == "__main__":
