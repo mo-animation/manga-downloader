@@ -205,7 +205,7 @@ class Header(tk.Canvas):
 def card(parent, title=None, fonts=None):
     outer = tk.Frame(parent, bg=CARD, highlightthickness=1, highlightbackground=BORDER, bd=0)
     inner = tk.Frame(outer, bg=CARD)
-    inner.pack(fill="both", expand=True, padx=14, pady=12)
+    inner.pack(fill="both", expand=True, padx=14, pady=10)
     if title:
         tk.Label(inner, text=title, bg=CARD, fg=MUTED, font=fonts["section"]).pack(anchor="w", pady=(0, 8))
     return outer, inner
@@ -238,7 +238,7 @@ class App:
         self.header.pack(fill="x")
 
         body = tk.Frame(root, bg=PAGE)
-        body.pack(fill="both", expand=True, padx=16, pady=14)
+        body.pack(fill="both", expand=True, padx=16, pady=12)
 
         # ---- إضافة مانجا ----
         c, add = card(body, "إضافة مانجا", F)
@@ -304,7 +304,7 @@ class App:
         GradientButton(frow, "افتح الفولدر", self.open_folder, font=F["base"]).pack(side="left", padx=(8, 0))
 
         brow = tk.Frame(ctl, bg=CARD)
-        brow.pack(fill="x", pady=(12, 0))
+        brow.pack(fill="x", pady=(10, 0))
         self.btn_start = GradientButton(brow, "⬇   ابدأ الطابور", self.start_queue, kind="primary",
                                         font=F["bold"], height=38, width=170)
         self.btn_start.pack(side="left")
@@ -317,15 +317,15 @@ class App:
         self.pct_lbl.pack(side="right")
 
         self.progress = GradientProgress(ctl)
-        self.progress.pack(fill="x", pady=(12, 0))
+        self.progress.pack(fill="x", pady=(10, 0))
 
         # ---- اللوج ----
         c, lg = card(body, None, F)
         # اللي تحت بيتحط الأول عشان ميتقصش؛ الطابور هو اللي بيصغر لو الشاشة صغيرة
-        c.pack(side="bottom", fill="x", pady=(12, 0))
-        ctl_card.pack(side="bottom", fill="x", pady=(12, 0))
-        queue_card.pack(side="top", fill="both", expand=True, pady=(12, 0))
-        self.log = tk.Text(lg, height=6, wrap="word", state="disabled", font=F["mono"], bg="#f7f8fa", fg=TEXT,
+        c.pack(side="bottom", fill="x", pady=(10, 0))
+        ctl_card.pack(side="bottom", fill="x", pady=(10, 0))
+        queue_card.pack(side="top", fill="both", expand=True, pady=(10, 0))
+        self.log = tk.Text(lg, height=3, wrap="word", state="disabled", font=F["mono"], bg="#f7f8fa", fg=TEXT,
                            relief="flat", bd=0, padx=10, pady=8, highlightthickness=0)
         lsb = ttk.Scrollbar(lg, command=self.log.yview)
         self.log.configure(yscrollcommand=lsb.set)
