@@ -18,9 +18,9 @@ IS_WIN = sys.platform.startswith("win")
 
 # ----------------------------- الألوان -----------------------------
 
-TEXT = "#ece8e2"
-MUTED = "#8e8a84"
-FAINT = "#5f5c58"
+TEXT = "#e9ecf1"
+MUTED = "#858b95"
+FAINT = "#4d535c"
 AMBER = QColor(255, 172, 72)
 AMBER_TEXT = "#ffd29a"
 RED_TEXT = "#ff7a6b"
@@ -39,15 +39,14 @@ QLabel#version {{ color: {MUTED}; background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.12); border-radius: 11px; padding: 3px 10px; }}
 
 QLineEdit {{
-    background: rgba(0,0,0,0.32); border: 1px solid rgba(255,255,255,0.10);
-    border-top: 1px solid rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.16);
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10);
     border-radius: 10px; padding: 7px 11px; color: {TEXT};
     selection-background-color: rgba(255,170,80,0.45);
 }}
-QLineEdit:focus {{ border: 1px solid rgba(255,190,120,0.55); background: rgba(0,0,0,0.40); }}
+QLineEdit:focus {{ border: 1px solid rgba(240,162,74,0.70); }}
 
 QTreeWidget {{
-    background: rgba(0,0,0,0.26); border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08);
     border-radius: 12px; outline: 0; padding: 2px 4px;
 }}
 QTreeWidget::item {{ border: none; padding: 0 6px; height: 30px; }}
@@ -60,7 +59,7 @@ QHeaderView::section {{
 }}
 
 QPlainTextEdit {{
-    background: rgba(0,0,0,0.30); border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08);
     border-radius: 12px; padding: 6px 8px; color: #bdb8b1;
 }}
 
@@ -71,7 +70,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{ height: 0; }}
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{ background: none; }}
 QScrollBar:horizontal {{ height: 0; }}
 
-QMessageBox, QFileDialog {{ background: #1c1b1a; }}
+QMessageBox, QFileDialog {{ background: #0b0e13; }}
 QMessageBox QLabel {{ color: {TEXT}; }}
 QMessageBox QPushButton {{
     background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
@@ -151,46 +150,18 @@ def glass_path(rect: QRectF, radius: float) -> QPainterPath:
     return p
 
 
-def paint_glass(p: QPainter, rect: QRectF, radius=16, tint=(255, 255, 255), fill_top=13, fill_bottom=4,
-                rim_top=95, rim_bottom=14, sheen=True):
-    """بانل زجاج: تعبئة شفافة + لمعة فوق + حافة لامعة مزدوجة (زي Liquid Glass)."""
+def paint_glass(p: QPainter, rect: QRectF, radius=16, fill=9, border=24, tint=(255, 255, 255)):
+    """بانل فلات: لون واحد شفاف + حافة رفيعة بلون واحد (من غير جريديانت)."""
     r = rect.adjusted(0.5, 0.5, -0.5, -0.5)
     path = glass_path(r, radius)
-    h = r.height()
-
-    g = QLinearGradient(r.topLeft(), r.bottomLeft())
-    g.setColorAt(0, QColor(*tint, fill_top))
-    g.setColorAt(1, QColor(*tint, fill_bottom))
-    p.fillPath(path, g)
-
-    if sheen:  # لمعة ناعمة في النص اللي فوق
-        s = QLinearGradient(r.topLeft(), QPointF(r.left(), r.top() + min(46, h * 0.55)))
-        s.setColorAt(0, QColor(255, 255, 255, 16))
-        s.setColorAt(1, QColor(255, 255, 255, 0))
-        p.fillPath(path, s)
-
-    # الحافة الخارجية: لامعة فوق وبتخفت لتحت
-    rim = QLinearGradient(r.topLeft(), r.bottomLeft())
-    rim.setColorAt(0, QColor(255, 255, 255, rim_top))
-    rim.setColorAt(0.22, QColor(255, 255, 255, int(rim_top * 0.35)))
-    rim.setColorAt(1, QColor(255, 255, 255, rim_bottom))
-    p.setPen(QPen(QBrush(rim), 1))
+    p.fillPath(path, QColor(*tint, fill))
+    p.setPen(QPen(QColor(*tint, border), 1))
     p.setBrush(Qt.NoBrush)
     p.drawPath(path)
 
-    # الحافة الداخلية: انعكاس مايل (فوق شمال + تحت يمين)
-    inner = glass_path(r.adjusted(1.2, 1.2, -1.2, -1.2), max(radius - 1.2, 1))
-    ig = QLinearGradient(r.topLeft(), r.bottomRight())
-    ig.setColorAt(0, QColor(255, 255, 255, int(rim_top * 0.55)))
-    ig.setColorAt(0.35, QColor(255, 255, 255, 0))
-    ig.setColorAt(0.75, QColor(255, 255, 255, 0))
-    ig.setColorAt(1, QColor(255, 255, 255, int(rim_top * 0.25)))
-    p.setPen(QPen(QBrush(ig), 1))
-    p.drawPath(inner)
-
 
 class Backdrop(QWidget):
-    """خلفية الشباك: صبغة غامقة فوق البلور + توهج دافي من تحت."""
+    """خلفية الشباك: أسود صريح بتنت أزرق خفيف جداً. الجريديانت هنا بس."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -200,21 +171,19 @@ class Backdrop(QWidget):
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
         w, h = self.width(), self.height()
+        a = 200 if self.blur else 255  # مع البلور: أسود شبه مصمت، وبيبان اللي وراه خفيف
+
         p.setCompositionMode(QPainter.CompositionMode_Source)
-        p.fillRect(self.rect(), QColor(12, 11, 10, 72 if self.blur else 246))
+        bg = QLinearGradient(QPointF(0, 0), QPointF(w * 0.35, h))
+        bg.setColorAt(0, QColor(8, 11, 17, a))
+        bg.setColorAt(1, QColor(0, 0, 0, a))
+        p.fillRect(self.rect(), bg)
         p.setCompositionMode(QPainter.CompositionMode_SourceOver)
 
-        # توهج دافي من تحت
-        glow = QRadialGradient(QPointF(w * 0.5, h + h * 0.08), max(w, h) * 0.62)
-        glow.setColorAt(0, QColor(255, 156, 48, 62))
-        glow.setColorAt(0.45, QColor(255, 130, 40, 20))
-        glow.setColorAt(1, QColor(255, 120, 30, 0))
-        p.fillRect(self.rect(), glow)
-
-        # ضوء خفيف جداً من فوق
-        top = QRadialGradient(QPointF(w * 0.3, -h * 0.15), w * 0.7)
-        top.setColorAt(0, QColor(255, 255, 255, 14))
-        top.setColorAt(1, QColor(255, 255, 255, 0))
+        # لمسة زرقا خفيفة جداً فوق
+        top = QRadialGradient(QPointF(w * 0.25, -h * 0.1), max(w, h) * 0.75)
+        top.setColorAt(0, QColor(70, 110, 170, 26))
+        top.setColorAt(1, QColor(70, 110, 170, 0))
         p.fillRect(self.rect(), top)
 
 
@@ -226,7 +195,7 @@ class GlassPanel(QWidget):
     def paintEvent(self, e):
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
-        paint_glass(p, QRectF(self.rect()), self.radius)
+        paint_glass(p, QRectF(self.rect()), self.radius, fill=7, border=22)
 
 
 class GlassButton(QPushButton):
@@ -241,21 +210,10 @@ class GlassButton(QPushButton):
         self.setFlat(True)
         self.setAttribute(Qt.WA_Hover)
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        if kind == "primary":
-            self.glow = QGraphicsDropShadowEffect(self)
-            self.glow.setBlurRadius(30)
-            self.glow.setOffset(0, 5)
-            self.glow.setColor(QColor(255, 150, 50, 110))
-            self.setGraphicsEffect(self.glow)
 
     def sizeHint(self):
         fm = QFontMetrics(self.font())
         return QSize(max(fm.horizontalAdvance(self.text()) + 38, self._min_w), self._h)
-
-    def setEnabled(self, on):
-        super().setEnabled(on)
-        if self.kind == "primary":
-            self.glow.setEnabled(on)
 
     def paintEvent(self, e):
         p = QPainter(self)
@@ -266,25 +224,14 @@ class GlassButton(QPushButton):
         radius = min(11, r.height() / 2)
 
         if not self.isEnabled():
-            paint_glass(p, r, radius, fill_top=6, fill_bottom=3, rim_top=30, rim_bottom=8, sheen=False)
+            paint_glass(p, r, radius, fill=4, border=12)
             color = QColor(FAINT)
         elif self.kind == "primary":
-            boost = 30 if hover else 0
-            g = QLinearGradient(r.topLeft(), r.bottomLeft())
-            g.setColorAt(0, QColor(255, 178, 84, 120 + boost))
-            g.setColorAt(1, QColor(214, 112, 30, 95 + boost))
-            if down:
-                g.setColorAt(0, QColor(214, 112, 30, 120))
-                g.setColorAt(1, QColor(255, 178, 84, 110))
-            p.fillPath(glass_path(r, radius), g)
-            paint_glass(p, r, radius, tint=(255, 220, 170), fill_top=18, fill_bottom=0,
-                        rim_top=200 if hover else 170, rim_bottom=40)
-            color = QColor("#fff3e2")
+            fill = QColor(225, 146, 62) if down else QColor(255, 178, 90) if hover else QColor(240, 162, 74)
+            p.fillPath(glass_path(r, radius), fill)
+            color = QColor("#140c04")
         else:
-            paint_glass(p, r, radius, fill_top=22 if hover else 14, fill_bottom=8 if hover else 4,
-                        rim_top=130 if hover else 95, rim_bottom=18)
-            if down:
-                p.fillPath(glass_path(r, radius), QColor(0, 0, 0, 40))
+            paint_glass(p, r, radius, fill=6 if down else 16 if hover else 10, border=40 if hover else 26)
             color = QColor(RED_TEXT if self.kind == "danger" else TEXT)
 
         p.setPen(color)
@@ -307,21 +254,14 @@ class GlassProgress(QWidget):
         p.setRenderHint(QPainter.Antialiasing)
         r = QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5)
         rad = r.height() / 2
-        p.fillPath(glass_path(r, rad), QColor(0, 0, 0, 90))
-        p.setPen(QPen(QColor(255, 255, 255, 22), 1))
+        p.fillPath(glass_path(r, rad), QColor(255, 255, 255, 14))
+        p.setPen(Qt.NoPen)
         p.drawPath(glass_path(r, rad))
         if self.value <= 0:
             return
         fw = max(r.height(), r.width() * self.value / 100)
         fr = QRectF(r.left(), r.top(), fw, r.height())
-        g = QLinearGradient(fr.topLeft(), fr.topRight())
-        g.setColorAt(0, QColor(170, 92, 28))
-        g.setColorAt(1, QColor(255, 190, 100))
-        p.fillPath(glass_path(fr, rad), g)
-        hl = QLinearGradient(fr.topLeft(), fr.bottomLeft())
-        hl.setColorAt(0, QColor(255, 255, 255, 90))
-        hl.setColorAt(0.5, QColor(255, 255, 255, 0))
-        p.fillPath(glass_path(fr.adjusted(1, 1, -1, -fr.height() / 2), rad / 2), hl)
+        p.fillPath(glass_path(fr, rad), QColor(240, 162, 74))
 
 
 class TestPattern(QWidget):
