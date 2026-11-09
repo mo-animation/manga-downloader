@@ -705,7 +705,7 @@ def main():
         shot = args[0] if args else None
 
         def finish():
-            print("blur:", win.blur)
+            print("blur:", win.blur, flush=True)
             if shot:
                 g = win.frameGeometry()
                 pad = 30
@@ -714,7 +714,8 @@ def main():
                 if pix.isNull() or pix.width() < 10:
                     pix = win.grab()
                 pix.save(shot)
-            print("selftest ok")
+            print("selftest ok", flush=True)
+            win.busy = False  # عشان ميسألش «تقفل البرنامج؟»
             app.quit()
 
         QTimer.singleShot(3000, finish)
