@@ -37,11 +37,10 @@ jobs:
         shell: bash
         run: |
           set +e
-          python manga_gui.py --selftest screenshot-${{ matrix.name }}.png 2>selftest-err.txt
+          python -X faulthandler manga_gui.py --selftest screenshot-${{ matrix.name }}.png 2>selftest-err.txt
           code=$?
           echo "exit code: $code"
           echo "--- stderr ---"; cat selftest-err.txt
-          grep -q "selftest ok" <(python -c "print('selftest ok')") || true
           [ -f screenshot-${{ matrix.name }}.png ] || { echo "no screenshot"; exit 1; }
           exit $code
 

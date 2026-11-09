@@ -717,6 +717,7 @@ def main():
                     pix = win.grab()
                 pix.save(shot)
             print("selftest ok", flush=True)
+            print("exiting", flush=True)
             win.busy = False  # عشان ميسألش «تقفل البرنامج؟»
             sys.stdout.flush()
             os._exit(0)  # خروج مباشر بعد الفحص
