@@ -137,7 +137,7 @@ def _blur_mac(window) -> bool:
     vev = NSVisualEffectView.alloc().initWithFrame_(frame_view.bounds())
     vev.setAutoresizingMask_(NSViewWidthSizable | NSViewHeightSizable)
     vev.setBlendingMode_(0)   # BehindWindow
-    vev.setMaterial_(13)      # HUDWindow (غامق)
+    vev.setMaterial_(21)      # UnderWindowBackground (أشف من HUD)
     vev.setState_(1)          # Active دايماً
     frame_view.addSubview_positioned_relativeTo_(vev, NSWindowBelow, content)
     return True
@@ -201,7 +201,7 @@ class Backdrop(QWidget):
         p.setRenderHint(QPainter.Antialiasing)
         w, h = self.width(), self.height()
         p.setCompositionMode(QPainter.CompositionMode_Source)
-        p.fillRect(self.rect(), QColor(12, 11, 10, 120 if self.blur else 246))
+        p.fillRect(self.rect(), QColor(12, 11, 10, 72 if self.blur else 246))
         p.setCompositionMode(QPainter.CompositionMode_SourceOver)
 
         # توهج دافي من تحت
