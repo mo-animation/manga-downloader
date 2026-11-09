@@ -718,7 +718,8 @@ def main():
                 pix.save(shot)
             print("selftest ok", flush=True)
             win.busy = False  # عشان ميسألش «تقفل البرنامج؟»
-            app.quit()
+            sys.stdout.flush()
+            os._exit(0)  # خروج مباشر بعد الفحص
 
         QTimer.singleShot(3000, finish)
 
