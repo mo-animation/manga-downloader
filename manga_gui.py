@@ -132,7 +132,7 @@ class App(Backdrop):
         self.queue_title = label("", "section")
         qh.addWidget(self.queue_title)
         qh.addStretch()
-        for txt, cmd in (("▲", lambda: self.move(-1)), ("▼", lambda: self.move(1)),
+        for txt, cmd in (("▲", lambda: self.move_item(-1)), ("▼", lambda: self.move_item(1)),
                          ("✕  شيل", self.remove), ("امسح الخلصانين", self.clear_done)):
             qh.addWidget(self.btn(txt, cmd, height=30))
         ql.addLayout(qh)
@@ -300,7 +300,7 @@ class App(Backdrop):
         self.refresh()
         self.save()
 
-    def move(self, d):
+    def move_item(self, d):
         it = self.selected()
         if not it:
             return
