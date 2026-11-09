@@ -217,8 +217,10 @@ class App:
     def __init__(self, root):
         self.root = root
         root.title(f"{APP_NAME}  -  v{VERSION}")
-        root.geometry("880x860")
-        root.minsize(720, 700)
+        sh = root.winfo_screenheight()
+        h = max(560, min(840, sh - 100))
+        root.geometry(f"880x{h}+{max(0, (root.winfo_screenwidth() - 880) // 2)}+{max(0, (sh - h) // 3)}")
+        root.minsize(720, 540)
         root.configure(bg=PAGE)
 
         self.q = queue.Queue()
@@ -263,7 +265,7 @@ class App:
 
         # ---- الطابور ----
         c, qbox = card(body, None, F)
-        c.pack(fill="both", expand=True, pady=(12, 0))
+        queue_card = c
         qhead = tk.Frame(qbox, bg=CARD)
         qhead.pack(fill="x", pady=(0, 8))
         self.queue_title = tk.Label(qhead, text="", bg=CARD, fg=MUTED, font=F["section"])
@@ -275,7 +277,7 @@ class App:
         tf = tk.Frame(qbox, bg=BORDER, bd=0)
         tf.pack(fill="both", expand=True)
         cols = ("n", "title", "range", "status")
-        self.tree = ttk.Treeview(tf, columns=cols, show="headings", height=8, selectmode="browse")
+        self.tree = ttk.Treeview(tf, columns=cols, show="headings", height=5, selectmode="browse")
         for col, txt, w, anchor in (("n", "#", 40, "center"), ("title", "المانجا", 380, "w"),
                                     ("range", "الشابترز", 120, "center"), ("status", "الحالة", 140, "center")):
             self.tree.heading(col, text=txt)
@@ -292,7 +294,7 @@ class App:
 
         # ---- التحكم ----
         c, ctl = card(body, None, F)
-        c.pack(fill="x", pady=(12, 0))
+        ctl_card = c
         frow = tk.Frame(ctl, bg=CARD)
         frow.pack(fill="x")
         tk.Label(frow, text="فولدر الحفظ", bg=CARD, fg=TEXT, font=F["base"]).pack(side="left", padx=(0, 8))
@@ -319,8 +321,11 @@ class App:
 
         # ---- اللوج ----
         c, lg = card(body, None, F)
-        c.pack(fill="both", expand=False, pady=(12, 0))
-        self.log = tk.Text(lg, height=8, wrap="word", state="disabled", font=F["mono"], bg="#f7f8fa", fg=TEXT,
+        # اللي تحت بيتحط الأول عشان ميتقصش؛ الطابور هو اللي بيصغر لو الشاشة صغيرة
+        c.pack(side="bottom", fill="x", pady=(12, 0))
+        ctl_card.pack(side="bottom", fill="x", pady=(12, 0))
+        queue_card.pack(side="top", fill="both", expand=True, pady=(12, 0))
+        self.log = tk.Text(lg, height=6, wrap="word", state="disabled", font=F["mono"], bg="#f7f8fa", fg=TEXT,
                            relief="flat", bd=0, padx=10, pady=8, highlightthickness=0)
         lsb = ttk.Scrollbar(lg, command=self.log.yview)
         self.log.configure(yscrollcommand=lsb.set)
