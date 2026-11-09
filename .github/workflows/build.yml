@@ -29,7 +29,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install
-        run: python -m pip install pyinstaller pillow -r requirements.txt
+        run: python -m pip install pyinstaller -r requirements.txt
 
       - name: Self-test (opens the window and takes a screenshot)
         run: python manga_gui.py --selftest screenshot-${{ matrix.name }}.png

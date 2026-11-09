@@ -18,7 +18,7 @@ if [ -z "$PY" ]; then
   exit 1
 fi
 
-"$PY" -c "import requests, bs4" 2>/dev/null || "$PY" -m pip install --quiet -r requirements.txt
+"$PY" -c "import requests, bs4, PySide6" 2>/dev/null || "$PY" -m pip install --quiet -r requirements.txt
 "$PY" manga_gui.py &
 disown
 osascript -e 'tell application "Terminal" to close front window' >/dev/null 2>&1 &

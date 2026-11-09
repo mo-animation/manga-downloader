@@ -15,7 +15,7 @@ if errorlevel 1 (
     exit /b
 )
 
-python -c "import requests, bs4" >nul 2>&1
+python -c "import requests, bs4, PySide6" >nul 2>&1
 if errorlevel 1 (
     echo Installing required libraries, first time only...
     python -m pip install --quiet -r requirements.txt
