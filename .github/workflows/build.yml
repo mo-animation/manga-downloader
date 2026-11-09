@@ -4,7 +4,7 @@ name: Build Windows + Mac
 on:
   push:
     branches: [main]
-    paths-ignore: ["**.md"]
+    paths-ignore: ["**.md", "docs/**"]
   workflow_dispatch:
 
 permissions:
@@ -68,6 +68,16 @@ jobs:
         with:
           path: out
           merge-multiple: true
+
+      # صور البرنامج على ويندوز وماك بتتحفظ في docs/ وبتظهر في الـ README
+      - name: Update screenshots
+        run: |
+          mkdir -p docs
+          cp out/screenshot-*.png docs/ 2>/dev/null || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs
+          git diff --cached --quiet || (git commit -m "Update screenshots [skip ci]" && git push)
 
       - uses: softprops/action-gh-release@v2
         with:

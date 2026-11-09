@@ -14,6 +14,10 @@ Manga/
 
 بيشتغل على **Windows** و**Mac** من نفس الكود.
 
+| Windows | Mac |
+|---|---|
+| ![Windows](docs/screenshot-windows.png) | ![Mac](docs/screenshot-mac.png) |
+
 ## التحميل
 
 ادخل على صفحة **[Releases](../../releases/latest)** ونزّل النسخة المناسبة لجهازك:
