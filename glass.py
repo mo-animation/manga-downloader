@@ -50,9 +50,9 @@ QTreeWidget {{
     background: rgba(0,0,0,0.26); border: 1px solid rgba(255,255,255,0.08);
     border-radius: 12px; outline: 0; padding: 2px 4px;
 }}
-QTreeWidget::item {{ border: none; padding: 0 6px; height: 32px; }}
-QTreeWidget::item:hover {{ background: rgba(255,255,255,0.05); border-radius: 8px; }}
-QTreeWidget::item:selected {{ background: rgba(255,255,255,0.11); border-radius: 8px; color: #ffffff; }}
+QTreeWidget::item {{ border: none; padding: 0 6px; height: 30px; }}
+QTreeWidget::item:hover {{ background: rgba(255,255,255,0.05); }}
+QTreeWidget::item:selected {{ background: rgba(255,255,255,0.11); color: #ffffff; }}
 QHeaderView {{ background: transparent; }}
 QHeaderView::section {{
     background: transparent; color: {MUTED}; border: none;
@@ -328,7 +328,8 @@ class TestPattern(QWidget):
     """للفحص بس: خلفية ملونة ورا الشباك عشان نشوف البلور شغال."""
 
     def __init__(self):
-        super().__init__(None, Qt.FramelessWindowHint | Qt.Tool)
+        # مش Qt.Tool: على الماك ده بيخلي الشباك دايماً فوق
+        super().__init__(None, Qt.FramelessWindowHint | Qt.WindowDoesNotAcceptFocus)
 
     def paintEvent(self, e):
         p = QPainter(self)

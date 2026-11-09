@@ -71,7 +71,7 @@ class App(Backdrop):
 
         root = QVBoxLayout(self)
         root.setContentsMargins(18, 34 if IS_MAC else 18, 18, 18)
-        root.setSpacing(12)
+        root.setSpacing(10)
 
         # ---- الهيدر ----
         head = QHBoxLayout()
@@ -79,7 +79,7 @@ class App(Backdrop):
         titles.setSpacing(0)
         t = label(APP_NAME, "title")
         f = t.font()
-        f.setPointSizeF(f.pointSizeF() + 8)
+        f.setPointSizeF(f.pointSizeF() + 6)
         t.setFont(f)
         titles.addWidget(t)
         titles.addWidget(label("حمّل المانجا وخزّنها على جهازك", "muted"))
@@ -88,15 +88,15 @@ class App(Backdrop):
         self.update_lbl = label("", "update")
         self.update_lbl.setOpenExternalLinks(True)
         self.update_lbl.hide()
-        head.addWidget(self.update_lbl)
-        head.addWidget(label(f"v{VERSION}", "version"))
+        head.addWidget(self.update_lbl, 0, Qt.AlignVCenter)
+        head.addWidget(label(f"v{VERSION}", "version"), 0, Qt.AlignVCenter)
         root.addLayout(head)
 
         # ---- إضافة مانجا ----
         add = GlassPanel()
         al = QVBoxLayout(add)
-        al.setContentsMargins(16, 14, 16, 14)
-        al.setSpacing(10)
+        al.setContentsMargins(16, 12, 16, 12)
+        al.setSpacing(8)
         al.addWidget(label("إضافة مانجا", "section"))
         r1 = QHBoxLayout()
         self.url = QLineEdit()
@@ -126,8 +126,8 @@ class App(Backdrop):
         # ---- الطابور ----
         qp = GlassPanel()
         ql = QVBoxLayout(qp)
-        ql.setContentsMargins(16, 14, 16, 14)
-        ql.setSpacing(10)
+        ql.setContentsMargins(16, 12, 16, 12)
+        ql.setSpacing(8)
         qh = QHBoxLayout()
         self.queue_title = label("", "section")
         qh.addWidget(self.queue_title)
@@ -155,15 +155,15 @@ class App(Backdrop):
         hdr.resizeSection(3, 130)
         hdr.setStretchLastSection(False)
         hdr.setDefaultAlignment(Qt.AlignCenter)
-        self.tree.setMinimumHeight(120)
+        self.tree.setMinimumHeight(150)
         ql.addWidget(self.tree, 1)
         root.addWidget(qp, 1)
 
         # ---- التحكم ----
         cp = GlassPanel()
         cl = QVBoxLayout(cp)
-        cl.setContentsMargins(16, 14, 16, 14)
-        cl.setSpacing(12)
+        cl.setContentsMargins(16, 12, 16, 12)
+        cl.setSpacing(10)
         fr = QHBoxLayout()
         fr.addWidget(label("فولدر الحفظ"))
         self.out = QLineEdit(self.default_out)
@@ -192,7 +192,7 @@ class App(Backdrop):
         self.log = QPlainTextEdit()
         self.log.setReadOnly(True)
         self.log.setMaximumBlockCount(3000)
-        self.log.setFixedHeight(96)
+        self.log.setFixedHeight(64)
         lf = self.log.font()
         lf.setPointSizeF(lf.pointSizeF() - 0.5)
         self.log.setFont(lf)
@@ -670,7 +670,7 @@ def main():
         win.save = lambda: None  # الفحص ميلمسش الطابور المحفوظ
 
     avail = app.primaryScreen().availableGeometry()
-    w, h = min(900, avail.width() - 40), max(560, min(840, avail.height() - 60))
+    w, h = min(900, avail.width() - 40), max(560, min(880, avail.height() - 50))
     win.resize(w, h)
     win.setMinimumSize(720, 540)
     win.move(avail.x() + (avail.width() - w) // 2, avail.y() + max(0, (avail.height() - h) // 3))
@@ -699,6 +699,8 @@ def main():
     win.show()
     win.raise_()
     win.activateWindow()
+    if backplate:
+        backplate.lower()
 
     if selftest:
         args = sys.argv[sys.argv.index("--selftest") + 1:]
